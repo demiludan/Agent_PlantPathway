@@ -1,0 +1,22 @@
+======================================================================
+CLASSIFICATION REPORT: AnetCO2 vs CO2S
+======================================================================
+
+MODEL RANKING (by Test Accuracy):
+--------------------------------------------------
+1. Neural Network            100.00%
+2. Random Forest             100.00%
+3. SVM                       100.00%
+4. Logistic Regression       97.67%
+5. AdaBoost                  97.67%
+6. Gradient Boosting         95.35%
+7. Decision Tree             95.35%
+8. Naive Bayes               83.72%
+
+BEST MODEL: Neural Network
+   Accuracy: 100.00%
+   F1-Score: 100.00%
+   AUC-ROC:  1.0000
+
+MOST RELIABLE (CV): AdaBoost
+   CV Accuracy: 98.57% +/- 1.90%

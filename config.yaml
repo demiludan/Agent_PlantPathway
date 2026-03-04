@@ -1,0 +1,128 @@
+# C3 vs C4 Photosynthetic Pathway Classification Configuration
+# Three-tier experiment hierarchy: base -> data -> model
+
+# ============================================================================
+# BASE EXPERIMENT TEMPLATE
+# ============================================================================
+base_experiment: &base
+  # Data Configuration
+  base_path: "data"
+  measurements_file: "StandardDataForAI_measurements.parquet"
+  metadata_file: "StandardDataforAI_metadata.parquet"
+
+  # Classification target
+  x_variable: "CO2S"
+  y_variable: "AnetCO2"
+  label_column: "Photosynthetic_pathway"
+  curve_id_column: "curve_id"
+  class_names: ["C3", "C4"]
+  num_classes: 2
+
+  # Train/test split
+  test_size: 0.2
+  random_seed: 42
+
+  # Cross-validation
+  n_cv_folds: 5
+
+  # Neural Network hyperparameters
+  epochs: 100
+  batch_size: 16
+  learning_rate: 1.0e-4
+
+  # Device
+  device: "cpu"
+
+  # Output
+  output_dir: "experiments"
+
+  # Models to train (all 8)
+  models:
+    - "Neural Network"
+    - "Logistic Regression"
+    - "Random Forest"
+    - "SVM"
+    - "Gradient Boosting"
+    - "AdaBoost"
+    - "Naive Bayes"
+    - "Decision Tree"
+
+  # Sklearn model hyperparameters
+  logistic_regression:
+    max_iter: 1000
+
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+
+  svm:
+    kernel: "rbf"
+    probability: true
+
+  gradient_boosting:
+    n_estimators: 100
+    max_depth: 5
+
+  adaboost:
+    n_estimators: 100
+    algorithm: "SAMME"
+
+  decision_tree:
+    max_depth: 10
+
+  # FNN architecture
+  fnn_layer1: 128
+  fnn_layer2: 256
+  fnn_layer3: 128
+  fnn_layer4: 64
+
+# ============================================================================
+# DATA EXPERIMENTS (preprocessing configs)
+# ============================================================================
+co2s_c3c4: &co2s_c3c4
+  <<: *base
+  name: "co2s_c3c4"
+  description: "C3 vs C4 classification using AnetCO2 vs CO2S curves"
+  x_variable: "CO2S"
+
+ci_c3c4: &ci_c3c4
+  <<: *base
+  name: "ci_c3c4"
+  description: "C3 vs C4 classification using AnetCO2 vs Ci curves"
+  x_variable: "Ci"
+
+# ============================================================================
+# MODEL EXPERIMENTS (training configs)
+# ============================================================================
+all_models_co2s: &all_models_co2s
+  <<: *co2s_c3c4
+  name: "all_models_co2s"
+  data_name: "co2s_c3c4"
+  description: "All 8 models trained on CO2S-based A/Ci curves"
+
+all_models_ci:
+  <<: *ci_c3c4
+  name: "all_models_ci"
+  data_name: "ci_c3c4"
+  description: "All 8 models trained on Ci-based A/Ci curves"
+
+fnn_only_co2s:
+  <<: *co2s_c3c4
+  name: "fnn_only_co2s"
+  data_name: "co2s_c3c4"
+  description: "Neural Network only on CO2S curves"
+  models:
+    - "Neural Network"
+  epochs: 200
+  learning_rate: 5.0e-5
+
+random_forest_co2s:
+  <<: *co2s_c3c4
+  name: "random_forest_co2s"
+  data_name: "co2s_c3c4"
+  description: "Random Forest only on CO2S curves"
+  models:
+    - "Random Forest"
+  random_forest:
+    n_estimators: 200
+    max_depth: 15

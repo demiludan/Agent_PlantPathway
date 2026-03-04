@@ -1,0 +1,103 @@
+experiment_parser:
+  description: >
+    Read the user prompt:
+    "{prompt}"
+
+    - Identify the classification experiment requested (valid experiments: {allowed_experiments}).
+    - If the CLI supplied experiment override "{experiment_override}" is non-empty, that value MUST be returned.
+    - Default to "all_models_co2s" if the user just says "classify C3 vs C4" without specifying.
+    - When no valid experiment is found, explain why in an errors list.
+    Return machine-readable JSON only.
+  expected_output: >
+    {{"experiment": "<experiment_or_null>", "errors": ["list of issues or empty list"]}}
+
+config_parser:
+  description: >
+    Read the user prompt:
+    "{prompt}"
+
+    - Determine x-variable preference: CO2S (default) or Ci.
+    - Determine if the user wants a specific model subset (e.g., "only neural network", "just random forest").
+    - Return JSON only.
+  expected_output: >
+    {{"x_variable": "<CO2S|Ci>", "model_subset": "<null or list>", "errors": ["..."]}}
+
+invalid_input:
+  description: >
+    The C3/C4 classification request was invalid for this reason:
+    "{reason}"
+
+    - List the valid experiments ({allowed_experiments}).
+    - Provide one corrected example prompt, such as "{example_prompt}".
+    - Keep the response concise (<=5 bullets).
+  expected_output: >
+    A short Markdown message that explains the issue, lists valid options, and shows one sample prompt.
+
+write_report:
+  description: |
+    You are preparing a Markdown report for experiment {experiment_name}. Use ONLY the data provided below.
+
+    This is a C3 vs C4 photosynthetic pathway classification experiment using A/Ci curves
+    (AnetCO2 vs {x_variable}). Eight ML models were trained and evaluated.
+
+    Test metrics (all models):
+    ```json
+    {test_metrics_json}
+    ```
+
+    Cross-validation results:
+    ```json
+    {cv_results_json}
+    ```
+
+    Figure paths:
+    - Data overview: `{data_overview_fig}`
+    - NN training curves: `{nn_training_fig}`
+    - Accuracy comparison: `{accuracy_comparison_fig}`
+    - Confusion matrices: `{confusion_matrices_fig}`
+    - Cross-validation: `{cv_fig}`
+    - Performance heatmap: `{heatmap_fig}`
+
+    Hyperparameter source:
+    ```json
+    {hyperparameters_json}
+    ```
+
+    Follow this outline exactly:
+
+    # C3 vs C4 Photosynthetic Pathway Classification Report
+    - Introductory paragraph beginning with: `This report evaluates 8 machine learning models for classifying C3 vs C4 photosynthetic pathways using A/Ci curves (AnetCO2 vs {x_variable}).`
+    - Embed data overview figure.
+
+    ## 1. Experiment Overview
+    - Describe the dataset, curve resampling, train/test split, and models used.
+
+    ## 2. Model Comparison
+    - ### Accuracy Ranking: embed accuracy comparison figure, discuss ranking.
+    - ### Performance Heatmap: embed heatmap, analyze precision/recall/F1/AUC across models.
+    - ### Confusion Matrices: embed confusion matrix figure, analyze misclassification patterns.
+
+    ## 3. Neural Network Analysis
+    - Embed NN training curves, discuss convergence and overfitting indicators.
+
+    ## 4. Cross-Validation Results
+    - Embed CV figure, discuss reliability and generalization of each model.
+
+    ## 5. Discussion and Recommendations
+    - Identify best model and most reliable model.
+    - Practical recommendations for plant physiologists using these classifiers.
+    - Suggestions for improvement (more data, hyperparameter tuning, ensemble methods).
+
+  expected_output: >
+    Publication-ready Markdown that follows the specified outline, includes tables and figures.
+
+command_parser:
+  description: >
+    Read the user prompt:
+    "{prompt}"
+
+    - Determine whether the user wants to skip preprocessing, training, inference, evaluation, or all steps.
+    - Return ONLY JSON with boolean fields for each stage.
+    - Always include a "reasons" array of short strings.
+  expected_output: >
+    {"skip_preprocess": <true|false>, "skip_train": <true|false>, "skip_inference": <true|false>, "skip_evaluate": <true|false>, "report_only": <true|false>, "reasons": ["..."]}

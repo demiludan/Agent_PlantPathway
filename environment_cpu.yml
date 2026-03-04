@@ -1,0 +1,30 @@
+name: plant-pathway-agents-cpu
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cpuonly
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - matplotlib
+  - seaborn
+  - pillow
+  - pyyaml
+  - pyarrow
+  - joblib
+  - ruamel.yaml
+  - tqdm
+  - pip
+  - pip:
+    - crewai>=0.1
+    - pydantic>=2.0
+    - fastapi
+    - uvicorn
+    - python-multipart
