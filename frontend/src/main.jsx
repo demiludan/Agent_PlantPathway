@@ -510,19 +510,7 @@ function App() {
       {/* ── Footer ──────────────────────────────────────────── */}
       <footer className="footer">
         <div className="footer-content">
-          <svg className="ornl-logo" width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ORNL Logo">
-            {/* Oak leaf */}
-            <path d="M16 4c-2 2-5 5-6 9-1 3-0.5 6 0.5 8 1.5 3 3 4 3 7 0 2-1 4-2.5 5.5C12.5 35 14 36 16 36s3.5-1 5-2.5C19.5 32 18.5 30 18.5 28c0-3 1.5-4 3-7 1-2 1.5-5 0.5-8-1-4-4-7-6-9z" fill="#16a34a" />
-            <line x1="16" y1="16" x2="16" y2="36" stroke="#16a34a" strokeWidth="1" opacity="0.5" />
-            <line x1="16" y1="20" x2="12" y2="16" stroke="#16a34a" strokeWidth="0.8" opacity="0.4" />
-            <line x1="16" y1="20" x2="20" y2="16" stroke="#16a34a" strokeWidth="0.8" opacity="0.4" />
-            <line x1="16" y1="24" x2="13" y2="21" stroke="#16a34a" strokeWidth="0.8" opacity="0.4" />
-            <line x1="16" y1="24" x2="19" y2="21" stroke="#16a34a" strokeWidth="0.8" opacity="0.4" />
-            {/* OAK RIDGE text */}
-            <text x="34" y="17" fontFamily="Inter, -apple-system, system-ui, sans-serif" fontSize="10" fontWeight="700" fill="#1a1d27" letterSpacing="0.08em">OAK RIDGE</text>
-            {/* National Laboratory text */}
-            <text x="34" y="29" fontFamily="Inter, -apple-system, system-ui, sans-serif" fontSize="8" fontWeight="400" fill="#6b7280" letterSpacing="0.04em">National Laboratory</text>
-          </svg>
+          <img className="ornl-logo" src="/ORNL.png" alt="Oak Ridge National Laboratory" />
           <span className="muted">ORNL GPTgp Project funded by DOE-BER</span>
         </div>
       </footer>
