@@ -1,6 +1,6 @@
 # Agent_PlantPathway
 
-AI-agent-driven ML pipeline for **C3 vs C4 photosynthetic pathway classification** using A/Ci curves. Built on the same architecture as [Agent_GW](../README.md) (groundwater forecasting), adapted for multi-model classification.
+AI-agent-driven ML pipeline for **C3 vs C4 photosynthetic pathway classification** using A/Ci curves. 
 
 ## What it does
 
