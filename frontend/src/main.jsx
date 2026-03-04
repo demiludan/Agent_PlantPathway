@@ -165,9 +165,31 @@ function PipelineStepper({ stages }) {
   );
 }
 
+/* ── PDF Icon ───────────────────────────────────────────────────── */
+
+function PdfIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M5 5h2.5a1 1 0 010 2H5V5z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d="M5 9h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function HtmlIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M4.5 4L2 8l2.5 4M11.5 4L14 8l-2.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 3l-2 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /* ── Completion Banner + Deliverables ───────────────────────────── */
 
-function CompletionBanner({ run, report, onViewReport, showingReport }) {
+function CompletionBanner({ run, report, onShowHtml, reportHtmlRef }) {
   if (!run || run.status !== "completed") return null;
 
   const downloadBlob = (content, filename, type) => {
@@ -180,7 +202,36 @@ function CompletionBanner({ run, report, onViewReport, showingReport }) {
     URL.revokeObjectURL(url);
   };
 
-  const downloadReport = () => downloadBlob(report, "classification_report.md", "text/markdown");
+  const downloadPdf = () => {
+    // Grab the rendered HTML from the report viewer already in the DOM
+    const reportEl = reportHtmlRef?.current;
+    const reportHtml = reportEl ? reportEl.innerHTML : "<p>Report not available.</p>";
+
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/>
+<title>Classification Report</title>
+<style>
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; color: #1a1d27;
+         max-width: 800px; margin: 0 auto; padding: 40px 32px; line-height: 1.7; font-size: 14px; }
+  h1 { font-size: 22px; margin-top: 24px; margin-bottom: 12px; }
+  h2 { font-size: 18px; margin-top: 20px; margin-bottom: 10px; }
+  h3 { font-size: 15px; margin-top: 16px; margin-bottom: 8px; }
+  p { margin-bottom: 12px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 13px; }
+  th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+  th { background: #f7f8fa; font-weight: 600; }
+  img { max-width: 100%; margin: 12px 0; border-radius: 8px; }
+  code { background: #f7f8fa; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  pre { background: #f7f8fa; padding: 14px; border-radius: 8px; overflow-x: auto; border: 1px solid #e5e7eb; }
+  @media print { body { padding: 0; } }
+</style>
+</head><body>${reportHtml}</body></html>`);
+    win.document.close();
+    // Wait for images to load then trigger print
+    setTimeout(() => { win.print(); }, 500);
+  };
 
   const downloadMetadata = () => {
     const meta = {
@@ -207,14 +258,16 @@ function CompletionBanner({ run, report, onViewReport, showingReport }) {
         <span>Classification Complete</span>
       </div>
       <div className="deliverables">
-        <button className="btn-deliverable" onClick={onViewReport}>
-          <DocIcon />
-          {showingReport ? "Hide Report" : "View Report"}
-        </button>
         {report && (
-          <button className="btn-deliverable" onClick={downloadReport}>
-            <DownloadIcon />
-            Report (.md)
+          <button className="btn-deliverable" onClick={downloadPdf}>
+            <PdfIcon />
+            Report PDF
+          </button>
+        )}
+        {report && (
+          <button className="btn-deliverable" onClick={onShowHtml}>
+            <HtmlIcon />
+            Report HTML
           </button>
         )}
         <button className="btn-deliverable" onClick={downloadMetadata}>
@@ -290,19 +343,19 @@ function OperatorDetails({ logs }) {
 
 /* ── Report Viewer ──────────────────────────────────────────────── */
 
-function ReportViewer({ report, transformImageUri }) {
+const ReportViewer = React.forwardRef(function ReportViewer({ report, transformImageUri }, ref) {
   if (!report) return null;
   return (
     <div className="report-viewer">
       <div className="report-header">Classification Report</div>
-      <div className="report-content markdown">
+      <div className="report-content markdown" ref={ref}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={transformImageUri}>
           {report}
         </ReactMarkdown>
       </div>
     </div>
   );
-}
+});
 
 /* ── Main App ───────────────────────────────────────────────────── */
 
@@ -316,6 +369,7 @@ function App() {
   const [report, setReport] = useState("");
   const [mode, setMode] = useState("overview");
   const [showReport, setShowReport] = useState(false);
+  const reportHtmlRef = useRef(null);
 
   useEffect(() => {
     createSession("C3/C4 Classification").then(setSession).catch(console.error);
@@ -443,12 +497,12 @@ function App() {
           <CompletionBanner
             run={run}
             report={report}
-            onViewReport={() => setShowReport(!showReport)}
-            showingReport={showReport}
+            onShowHtml={() => setShowReport(true)}
+            reportHtmlRef={reportHtmlRef}
           />
           {showReport && report && (
             <section className="card">
-              <ReportViewer report={report} transformImageUri={transformImageUri} />
+              <ReportViewer ref={reportHtmlRef} report={report} transformImageUri={transformImageUri} />
             </section>
           )}
         </>
@@ -469,7 +523,7 @@ function App() {
       {/* Report also visible in operator mode when complete */}
       {mode === "operator" && report && (
         <section className="card">
-          <ReportViewer report={report} transformImageUri={transformImageUri} />
+          <ReportViewer ref={reportHtmlRef} report={report} transformImageUri={transformImageUri} />
         </section>
       )}
 
