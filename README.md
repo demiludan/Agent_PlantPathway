@@ -88,12 +88,15 @@ python main.py --prompt "Skip training, just evaluate"
 uvicorn webapp.api:app --reload --port 8000
 
 # Terminal 2: Start frontend (in separate terminal)
-cd frontend && npm install && npm run dev
+cd frontend
+npm install
+npm run dev
 
-Open browser: http://localhost:5173
+# Open browser to show the interface
+http://localhost:5173
 
-Type in the prompt box: Classify C3 vs C4 using CO2S curves
-and click Send.
+# In the Interface, type in the prompt box following command, and click Send
+Classify C3 vs C4 using CO2S curves
 
 ```
 
