@@ -604,6 +604,18 @@ body {
   text-align: center;
 }
 
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ornl-logo {
+  flex-shrink: 0;
+}
+
 .muted {
   color: var(--muted);
   font-size: 13px;
