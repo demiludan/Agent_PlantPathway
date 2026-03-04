@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from crewai.tools import tool
 
@@ -38,7 +36,7 @@ def build_run_pipeline_tool(settings: PipelineSettings):
     def run_pipeline_tool(
         parsed: str,
         checkpoint: str = "best_model.pth",
-        splits: List[str] | None = None,
+        splits: Optional[List[str]] = None,
         skip_preprocess: bool = False,
         skip_train: bool = False,
         skip_inference: bool = False,
